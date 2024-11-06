@@ -1,7 +1,7 @@
 // <====================== file to create the post schema ==============>
 
 // importing the required modules
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 // creating the post
 const postSchema = new Schema({

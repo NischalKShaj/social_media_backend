@@ -4,6 +4,8 @@
 import express from "express";
 import userController from "../controller/userController.js";
 import { validate } from "../middleware/validate.js";
+import { authenticateUserJwt } from "../middleware/tokenValidation.js";
+import { upload } from "../middleware/multer.js";
 
 // setting route instance
 const router = express.Router();
@@ -13,6 +15,31 @@ router.get("/", userController.getHome);
 
 // router for signup the user
 router.post("/signup", validate, userController.postSignup);
+
+// router for user login
+router.post("/login", userController.postLogin);
+
+// router for creating new post
+router.post(
+  "/create-post/:id",
+  authenticateUserJwt,
+  upload.single("image"),
+  userController.postAddPost
+);
+
+// router for editing the post
+router.patch(
+  "/edit-post/:postId/:id",
+  authenticateUserJwt,
+  upload.single("image"),
+  userController.editPost
+);
+
+// router for showing the post of the specific user
+router.get("/get-post/:id", authenticateUserJwt, userController.getPost);
+
+// router for deleting the post
+router.delete("/delete-post", authenticateUserJwt, userController.deletePost);
 
 // exporting the router
 export default router;
