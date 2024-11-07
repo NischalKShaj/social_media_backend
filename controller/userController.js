@@ -2,15 +2,17 @@
 
 // importing the required modules
 import hash from "bcryptjs";
+import dotenv from "dotenv";
 import { userModel } from "../models/userModel.js";
 import { postModel } from "../models/postModel.js";
 import { generateToken } from "../middleware/generateToken.js";
+dotenv.config;
 
 const userController = {
   // controller for getting the home-page
   getHome: async (req, res) => {
     try {
-      const posts = await postModel.find();
+      const posts = await postModel.find().populate("user", "username profile");
       res.status(202).json({ posts: posts });
     } catch (error) {
       console.error("error", error);
@@ -55,7 +57,7 @@ const userController = {
         res.status(403).json("invalid user credentials");
         return;
       }
-      const token = generateToken.generateToken(email);
+      const token = generateToken(email);
       res
         .cookie("access_token", token, { httpOnly: true })
         .status(202)
@@ -75,16 +77,15 @@ const userController = {
         res.status(400).json("please provide a image for the post");
         return;
       }
-      console.log("heading", heading);
 
       const newPost = new postModel({
         heading,
         description,
-        image: `/uploads/img/${req.file.filename}`,
+        image: `${process.env.BACKEND_URL}/uploads/img/${req.file.filename}`,
         user: userId,
       });
       await newPost.save();
-      console.log("new Post", newPost);
+
       res.status(201).json("post created");
     } catch (error) {
       console.error("error", error);
@@ -116,7 +117,7 @@ const userController = {
       };
 
       if (req.file) {
-        updatedData.image = `/uploads/img/${req.file.filename}`;
+        updatedData.image = `${process.env.BACKEND_URL}/uploads/img/${req.file.filename}`;
       }
 
       const updatedPost = await postModel.findByIdAndUpdate(
@@ -124,7 +125,7 @@ const userController = {
         { $set: updatedData },
         { new: true }
       );
-      console.log("updated", updatedPost);
+
       res.status(200).json({ post: updatedPost });
     } catch (error) {
       console.error("error", error);
@@ -151,20 +152,6 @@ const userController = {
 
       await postModel.findByIdAndDelete(postId);
       res.status(200).json("post deleted successfully");
-    } catch (error) {
-      console.error("error", error);
-      res.status(500).json("internal server error");
-    }
-  },
-
-  // controller for getting the post of a specific user
-  getPost: async (req, res) => {
-    try {
-      const posts = await postModel.find();
-      const userId = req.params.id;
-      const userPost = posts.map((post) => post.user.toString() === userId);
-      console.log("user post", userPost);
-      res.status(202).json({ post: userPost });
     } catch (error) {
       console.error("error", error);
       res.status(500).json("internal server error");

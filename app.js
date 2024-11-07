@@ -45,8 +45,8 @@ app.use("/", userRouter);
 const port = process.env.PORT || 5000;
 
 // checking the test route
-app.get("/test", async (req, res) => {
-  res.send("server running successfully");
+app.get("/hello", async (req, res) => {
+  res.send("hello-world");
 });
 
 // // 404 Handler

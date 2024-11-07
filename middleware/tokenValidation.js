@@ -10,8 +10,6 @@ export const authenticateUserJwt = async (req, res, next) => {
   const token =
     req.cookies.access_token || req.headers["authorization"] || null;
 
-  console.log("token", token);
-
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -19,8 +17,6 @@ export const authenticateUserJwt = async (req, res, next) => {
   const actualToken = token.startsWith("Bearer ")
     ? token.slice(7, token.length)
     : token;
-
-  console.log("act", actualToken);
 
   try {
     const decoded = jwt.verify(actualToken, process.env.SECRET);

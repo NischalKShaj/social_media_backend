@@ -28,18 +28,19 @@ router.post(
 );
 
 // router for editing the post
-router.patch(
-  "/edit-post/:postId/:id",
+router.put(
+  "/edit-post/:id/:postId",
   authenticateUserJwt,
   upload.single("image"),
   userController.editPost
 );
 
-// router for showing the post of the specific user
-router.get("/get-post/:id", authenticateUserJwt, userController.getPost);
-
 // router for deleting the post
-router.delete("/delete-post", authenticateUserJwt, userController.deletePost);
+router.delete(
+  "/delete-post/:id/:postId",
+  authenticateUserJwt,
+  userController.deletePost
+);
 
 // exporting the router
 export default router;
